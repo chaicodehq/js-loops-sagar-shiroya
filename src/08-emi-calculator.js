@@ -33,14 +33,48 @@
  *
  * @example
  *   calculateEMI(10000, 0.01, 2000)
- *   // Month 1: 10000 + 100 = 10100, pay 2000, remaining = 8100
- *   // Month 2: 8100 + 81 = 8181, pay 2000, remaining = 6181
- *   // ... continues until remaining <= 0
+ *    Month 1: 10000 + 100 = 10100, pay 2000, remaining = 8100
+ *    Month 2: 8100 + 81 = 8181, pay 2000, remaining = 6181
+ *    ... continues until remaining <= 0
  *
  *   calculateEMI(10000, 0.05, 400)
- *   // First month interest = 500, EMI = 400 < 500, INFINITE LOOP!
- *   // => { months: -1, totalPaid: -1, totalInterest: -1 }
+ *    First month interest = 500, EMI = 400 < 500, INFINITE LOOP!
+ *    => { months: -1, totalPaid: -1, totalInterest: -1 }
  */
 export function calculateEMI(principal, monthlyRate, emi) {
-  // Your code here
+    let totalMonths = 0;
+    let totalPaid = 0;
+    let totalInterest = 0;
+    let remaining = principal;
+
+    if (
+        typeof principal !== "number" ||
+        typeof monthlyRate !== "number" ||
+        typeof emi !== "number" ||
+        principal * monthlyRate >= emi ||
+        principal <= 0 ||
+        monthlyRate <= 0 ||
+        emi <= 0
+    ) {
+        return { months: -1, totalPaid: -1, totalInterest: -1 };
+    }
+
+    while (remaining > 0) {
+        const interest = parseFloat((monthlyRate * remaining).toFixed(2));
+        remaining += interest;
+        totalInterest += interest;
+        // console.log(totalPaid);
+        totalPaid += remaining < emi ? remaining : emi;
+        remaining = remaining - (remaining < emi ? remaining : emi);
+        // console.log(remaining);
+        totalMonths++;
+    }
+
+    return {
+        months: totalMonths,
+        totalPaid,
+        totalInterest,
+    };
 }
+
+// console.log(calculateEMI("ten thousand", 0.02, 3000));

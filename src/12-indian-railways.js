@@ -45,5 +45,78 @@
  *   // => [{ name: "Rahul", trainNumber: "12345", class: "sleeper", status: "confirmed" }]
  */
 export function railwayReservation(passengers, trains) {
-  // Your code here
+    let result = [];
+
+    if (
+        !Array.isArray(passengers) ||
+        !Array.isArray(trains) ||
+        trains.length === 0 ||
+        passengers.length === 0
+    ) {
+        return result;
+    }
+
+    for (const passenger of passengers) {
+        let p = {};
+        p.name = passenger.name;
+        for (const train of trains) {
+            if (passenger.trainNumber === train.trainNumber) {
+                p.trainNumber = train.trainNumber;
+                if (train["seats"][passenger.preferred] > 0) {
+                    p.class = passenger.preferred;
+                    p.status = "confirmed";
+                    train["seats"][passenger.preferred] =
+                        train["seats"][passenger.preferred] - 1;
+                } else if (train["seats"][passenger.fallback] > 0) {
+                    p.class = passenger.fallback;
+                    p.status = "confirmed";
+                    train["seats"][passenger.fallback] =
+                        train["seats"][passenger.fallback] - 1;
+                } else {
+                    p.class = passenger.preferred;
+                    p.status = "waitlisted";
+                }
+                break;
+            }
+        }
+        if (p.status == null) {
+            p.trainNumber = passenger.trainNumber;
+            p.class = null;
+            p.status = "train_not_found";
+        }
+        result.push(p);
+    }
+    return result;
 }
+
+// console.log(
+//     railwayReservation(
+//         [
+//             {
+//                 name: "Rahul",
+//                 trainNumber: "12345",
+//                 preferred: "ac3",
+//                 fallback: "sleeper",
+//             },
+//             {
+//                 name: "Sagar",
+//                 trainNumber: "12345",
+//                 preferred: "ac3",
+//                 fallback: "sleeper",
+//             },
+//             {
+//                 name: "Bhupy",
+//                 trainNumber: "12345",
+//                 preferred: "ac3",
+//                 fallback: "sleeper",
+//             },
+//         ],
+//         [
+//             {
+//                 trainNumber: "12345",
+//                 name: "Rajdhani",
+//                 seats: { sleeper: 1, ac3: 0, ac2: 1, ac1: 0 },
+//             },
+//         ],
+//     ),
+// );
